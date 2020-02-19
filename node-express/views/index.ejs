@@ -6,9 +6,29 @@
     <title>Document</title>
 </head>
 <body>
+
+    <%- include('./commonHeader.ejs') %>
+
     我是一个首页
 
     <%= name %>
     <%= age %>
+
+    <% for(var i=0;i < list.length;i++){ %>
+        <li><%= list[i].name %></li>
+    <% } %>
+
+    <% if(age > 90){ %>
+        <span>你已经老了</span>
+    <% }else{ %>
+        <span>年轻就是资本</span>
+    <% } %>
+
+    <%%
+
+    <!-- <script src="../public/index.js"></script> -->
+    <script src="/index.js"></script>
+    
+
 </body>
 </html>
