@@ -1,5 +1,8 @@
 const express = require('express');
-const app = express();
+const bodyParser = require('body-parser');
+
+//1、搭建web服务器
+const app = express();  //相当于http.createServer(fn)
 const cookieParser = require('cookie-parser');
 const path = require('path');
 
@@ -66,6 +69,50 @@ app.get('/download',function(req,res){
     res.download('./README.md');
 });
 
+//后端跳转
+app.get('/baidu',(req,res,next)=>{
+    res.redirect('https://www.baidu.com')
+})
+
+//中间件自定义封装：
+let bdParser = require('./middlewave/bd-parser');
+
+app.use(bdParser);
+app.get('/aaa',(req,res,next)=>{
+    console.log('body',req.body)
+})
+
+
+//next 管道函数
+app.get('/a1',(req,res,next)=>{
+    // console.log('1处理')
+    setTimeout(()=>{
+        console.log('1处理');
+        next();
+    })
+})
+app.get('/a1',(req,res,next)=>{
+    console.log('2处理');
+})
+//处理集中的接口
+//all 处理一部分接口的共有逻辑
+app.all('/api/*',(req,res,next) => {
+    console.log('all',req.query)
+    console.log('all',req.body)
+    console.log('all',req.method)
+    //处理公共的业务逻辑
+    next() //管道函数
+})
+app.get('/api/goeods',(req,res,next)=>{
+    console.log('/api/goeods');
+})
+app.post('/api/news',(req,res,next)=>{
+    console.log('/api/news');
+})
+app.put('/api/products',(req,res,next)=>{
+    console.log('/api/products');
+})
+
 
 //http://localhost:3000/public/style.css
 // app.get('/public/style.css',function(req,res){
@@ -77,8 +124,8 @@ app.get('/download',function(req,res){
 //     res.sendFile(path.resolve(__dirname,'./public/index.js'))
 // });
 
-//设置静态文件托管
-app.use(express.static('public'));
+//3、设置静态资源托管
+app.use(express.static('./public'));
 app.get('/public/style.css',function(req,res){
     res.sendFile(path.resolve(__dirname,'./public/style.css'))
 });
@@ -87,5 +134,14 @@ app.get('/public/index.js',function(req,res){
 });
 
 
+//4、抓取浏览器->参数 & 数据
+app.get('/goods',(req,res,next)=>{
+    // console.log('获取地址栏数据',req.url);
+    // console.log('获取地址栏数据',req.query);
+    res.send({a:1,b:2});
+})
+
+
+//2、监听
 app.listen(3000);
 
